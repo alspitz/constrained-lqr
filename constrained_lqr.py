@@ -75,7 +75,12 @@ if __name__ == "__main__":
 
   parser = argparse.ArgumentParser()
   parser.add_argument("--ref", required=False, default=False, action="store_true")
+  parser.add_argument("--noise", required=False, default=False, action="store_true")
   args = parser.parse_args()
+
+  noise_var = 0.05
+  # What percentage of the maximum control does the reference demand.
+  ref_agg = 1.0
 
   w_pos = 1e5
   #w_vel = 3e3
@@ -119,7 +124,7 @@ if __name__ == "__main__":
     return x_ref, u_ref
 
   if args.ref:
-    x_ref, u_ref = make_ref(distance, 1.4 * max_abs_u, t_end, dt)
+    x_ref, u_ref = make_ref(distance, ref_agg * max_abs_u, t_end, dt)
   else:
     x_ref = np.zeros(2 * no_steps)
     u_ref = np.zeros(no_steps)
@@ -147,7 +152,12 @@ if __name__ == "__main__":
 
       x_ref_short = make_short_ref(x_ref, 2)
       u_ref_short = make_short_ref(u_ref, 1)
-      u = controller(x, x_ref=x_ref_short, u_ref=u_ref_short)
+
+      control_x = x
+      if args.noise:
+        control_x = x + noise_var * np.random.normal(size=(2,))
+
+      u = controller(control_x, x_ref=x_ref_short, u_ref=u_ref_short)
 
       next_x = A.dot(x) + B.dot(u)
 
