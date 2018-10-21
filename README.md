@@ -6,7 +6,7 @@ Simulates a 1D point mass controlled using LQR with input constraints. Solving t
 
 ## Usage
 
-Run [constrained_lqr.py](constrained_lqr.py).
+Run [constrained_lqr.py](constrained_lqr.py). Pass `--ref` to follow a bang bang reference that violates input constraints.
 
 Change `w_pos`, `w_vel`, `max_abs_u`, and `N` to experiment with different cost functions, input constraints, and horizon lengths.
 
